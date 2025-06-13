@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Journey Tracker</title>
+    <style>
+        /* --- General Styling & NEW AESTHETIC --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            /* GORGEOUS GRADIENT BACKGROUND */
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            background-attachment: fixed;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background-color: rgba(255, 255, 255, 0.85); /* Semi-transparent white */
+            backdrop-filter: blur(10px); /* Frosted glass effect */
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        h1, h2, h3 {
+            color: #3a3b5b; /* Darker, sophisticated color */
+            border-bottom: 2px solid #fde2f3; /* Soft pink border */
+            padding-bottom: 10px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #c2185b; /* Deep pink for main title */
+            border: none;
+        }
+
+        /* --- Header & Controls --- */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .controls label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .controls select, .controls button {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .controls button {
+            background-color: #e91e63;
+            color: white;
+            border: none;
+            font-weight: bold;
+        }
+
+        .controls button:hover {
+            box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* --- Progress Bars --- */
+        .progress-summary {
+            margin-bottom: 25px;
+        }
+        .progress-bar-container {
+            width: 100%;
+            background-color: #f1f1f1;
+            border-radius: 25px;
+            height: 25px;
+            margin-top: 8px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 25px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            line-height: 25px;
+            transition: width 0.5s ease-in-out;
+            white-space: nowrap;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        /* Kunal's Pink Gradient */
+        #my-progress-bar {
+            background: linear-gradient(to right, #ff81ae, #e91e63);
+        }
+        /* Samiksha's Complementary Gradient */
+        #samiksha-progress .progress-bar-fill {
+            background: linear-gradient(to right, #ab8ee6, #8e44ad);
+        }
+        
+        #progress-leader-status {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 1.05em;
+            padding: 12px;
+            background-color: #fff0f5; /* Lavender Blush */
+            color: #c2185b; /* Deep Pink */
+            border-radius: 8px;
+            border: 1px solid #fbc2eb;
+        }
+
+        /* --- Roadmap Styling --- */
+        .month-header {
+            cursor: pointer;
+            padding: 15px;
+            background-color: #fff;
+            border: 1px solid #f0f0f0;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 1.1em;
+            display: flex;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+
+        .month-header:hover {
+            background-color: #fef6fa;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .topic-list {
+            padding-left: 0;
+            border-left: none;
+            display: none; /* Hidden by default */
+            background-color: #fdfdff;
+            border-radius: 0 0 8px 8px;
+            margin-top: -1px;
+            padding-top: 10px;
+            border: 1px solid #f0f0f0;
+            border-top: none;
+        }
+
+        .topic-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .topic-item:last-child { border-bottom: none; }
+        .topic-title { flex-grow: 1; }
+
+        .progress-checkboxes {
+            display: flex;
+            gap: 15px;
+            margin-right: 20px;
+        }
+        
+        .progress-checkboxes label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9em;
+        }
+        
+        /* Custom Checkbox Styling */
+        input[type="checkbox"] {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #e91e63;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+        input[type="checkbox"]:checked {
+            background-color: #e91e63;
+        }
+        input[type="checkbox"]:checked::before {
+            content: '✔';
+            position: absolute;
+            color: white;
+            font-size: 14px;
+            top: -2px;
+            left: 2px;
+        }
+
+
+        .doubts-btn {
+            padding: 6px 12px;
+            font-size: 0.9em;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff81ae, #e91e63);
+            transition: all 0.3s ease;
+        }
+        .doubts-btn:hover {
+            box-shadow: 0 2px 10px rgba(233, 30, 99, 0.3);
+            transform: translateY(-1px);
+        }
+
+        /* --- Modal (Doubt Board) Styling --- */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            padding: 25px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            max-height: 80vh;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h2 { border: none; }
+
+        .close-btn {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover { color: #e91e63; }
+        
+        #comments-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin: 15px 0;
+            padding-right: 10px;
+        }
+        
+        .comment {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #fbc2eb;
+        }
+        .comment-author[data-author="me"] { color: #e91e63; }
+        .comment-author[data-author="samiksha"] { color: #8e44ad; }
+        .comment-timestamp {
+            font-size: 0.8em;
+            color: #6c757d;
+            margin-left: 10px;
+        }
+
+        #comment-form textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+        #comment-form textarea:focus {
+            border-color: #e91e63;
+            outline: none;
+        }
+        
+        #comment-form button {
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            float: right;
+            background: linear-gradient(45deg, #ff81ae, #e91e63);
+            transition: all 0.3s ease;
+        }
+        #comment-form button:hover {
+            box-shadow: 0 2px 10px rgba(233, 30, 99, 0.3);
+            transform: translateY(-1px);
+        }
+
+        /* --- Reply Feature Styling --- */
+        .reply-btn {
+            padding: 4px 8px;
+            font-size: 0.8em;
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 8px;
+            float: right;
+            transition: all 0.2s ease;
+        }
+        .reply-btn:hover { background-color: #e0e0e0; }
+
+        .reply-container {
+            margin-left: 30px;
+            border-left: 2px solid #eef2f5;
+            padding-left: 15px;
+            margin-top: 10px;
+        }
+
+        #reply-context {
+            padding: 10px;
+            background-color: #fff0f5;
+            border-radius: 5px;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        #cancel-reply {
+            background: none;
+            border: none;
+            color: #e91e63;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 1em;
+            margin-left: 10px;
+        }
+
+        /* --- Mobile Responsive Styles --- */
+        @media (max-width: 768px) {
+            body { padding: 10px 5px; }
+            .container { padding: 15px; margin: 10px; }
+            h1 { font-size: 1.8em; }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+            .controls > div { width: 100%; }
+            .controls select, .controls button { width: 100%; box-sizing: border-box; }
+
+            .topic-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+                padding: 12px;
+            }
+            .progress-checkboxes { margin-right: 0; }
+            .doubts-btn { width: 100%; text-align: center; padding: 10px; }
+            
+            .modal-content {
+                width: 95%;
+                max-height: 90vh;
+                padding: 15px;
+            }
+            .modal-header h2 { font-size: 1.2em; }
+
+            .reply-container {
+                margin-left: 15px;
+                padding-left: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Java Journey Tracker</h1>
+
+        <div class="controls">
+            <div>
+                <label for="user-switcher">Viewing as: </label>
+                <select id="user-switcher">
+                    <option value="me">Kunal Singh</option>
+                    <option value="samiksha">Samiksha Jadhav</option>
+                </select>
+            </div>
+            <div>
+                <button id="export-btn">Export Progress (Backup)</button>
+                <input type="file" id="import-file" style="display:none;">
+                <button id="import-btn">Import Progress (Restore)</button>
+            </div>
+        </div>
+
+        <div class="progress-summary">
+            <h3>Overall Progress</h3>
+            <div id="my-progress">
+                <span>Kunal Singh</span>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="my-progress-bar">0%</div>
+                </div>
+            </div>
+            <div id="samiksha-progress" style="margin-top: 10px;">
+                <span>Samiksha Jadhav</span>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="samiksha-progress-bar">0%</div>
+                </div>
+            </div>
+            <div id="progress-leader-status">Connecting to database...</div>
+        </div>
+
+        <div id="roadmap-container">
+            <!-- Roadmap will be generated by JavaScript here -->
+        </div>
+    </div>
+
+    <!-- The Doubt Board Modal -->
+    <div id="doubt-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Doubts</h2>
+                <span class="close-btn">×</span>
+            </div>
+            <div id="comments-container">
+                <!-- Comments will be loaded here -->
+            </div>
+            <div id="reply-context"></div>
+            <form id="comment-form">
+                <textarea id="comment-input" rows="3" placeholder="Ask a question or share a thought..."></textarea>
+                <button type="submit">Post</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Use type="module" for Firebase SDKs -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js";
+        // *** NEW: Import Realtime Database functions ***
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDYGPni4PdzWOMTg1-zL7klmmMPgrZNn2I",
+            authDomain: "to-do-list-84cee.firebaseapp.com",
+            databaseURL: "https://to-do-list-84cee-default-rtdb.firebaseio.com",
+            projectId: "to-do-list-84cee",
+            storageBucket: "to-do-list-84cee.appspot.com",
+            messagingSenderId: "623916391670",
+            appId: "1:623916391670:web:af46cbb278d2fac6f060d7",
+            measurementId: "G-K33ZQK0TQK"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        // *** NEW: Initialize Firebase Database ***
+        const database = getDatabase(app);
+
+        // --- THE JAVASCRIPT LOGIC ---
+        // (The rest of your JS code is here, with modifications for Firebase)
+        
+        const roadmapData = [
+             {
+                month: "Apna College: Java + DSA Playlist",
+                topics: [
+                    { id: "apna-1", title: "Introduction to Java Language" },
+                    { id: "apna-2", title: "Variables in Java & Input/Output" },
+                    { id: "apna-3", title: "Conditional Statements (If-Else, Switch)" },
+                    { id: "apna-4", title: "Loops in Java (for, while, do-while)" },
+                    { id: "apna-5", title: "Pattern Questions (Part 1)" },
+                    { id: "apna-6", title: "Advanced Pattern Questions (Part 2)" },
+                    { id: "apna-7", title: "Functions & Methods" },
+                    { id: "apna-8", title: "Functions Practice Questions" },
+                    { id: "apna-9", title: "Time and Space Complexity" },
+                    { id: "apna-10", title: "Arrays Introduction" },
+                    { id: "apna-11", title: "2D Arrays" },
+                    { id: "apna-12", title: "Strings" },
+                    { id: "apna-13", title: "String Builder" },
+                    { id: "apna-14", title: "Operators & Binary Number System" },
+                    { id: "apna-15", title: "Bit Manipulation" },
+                    { id: "apna-16", title: "Sorting (Bubble, Selection, Insertion)" },
+                    { id: "apna-17", title: "Recursion (Theory)" },
+                    { id: "apna-18", title: "Recursion (Practice Problems)" },
+                    { id: "apna-19", title: "Recursion (Advanced Problems)" },
+                    { id: "apna-20", title: "Backtracking & N-Queens Problem" },
+                    { id: "apna-21", title: "Sudoku Solver using Backtracking" },
+                    { id: "apna-22", title: "Merge Sort" },
+                    { id: "apna-23", title: "Quick Sort" },
+                    { id: "apna-24", title: "OOPs in One Shot" },
+                    { id: "apna-25", title: "ArrayList In Java" },
+                    { id: "apna-26", title: "Java Collections Framework" },
+                    { id: "apna-27", title: "Introduction to Linked List" },
+                    { id: "apna-28", title: "How to Reverse a Linked List" },
+                    { id: "apna-29", title: "Important Linked List Questions" },
+                    { id: "apna-30", title: "Stack Data Structure" },
+                    { id: "apna-31", title: "Queue Data Structure" },
+                    { id: "apna-32", title: "Binary Trees" },
+                    { id: "apna-33", title: "Binary Search Trees (BST)" },
+                    { id: "apna-34", "title": "HashSet in Java" },
+                    { id: "apna-35", "title": "HashMap in Java" },
+                    { id: "apna-36", "title": "HashMap Implementation" },
+                    { id: "apna-37", "title": "Hashing Q's (One Shot)" },
+                    { id: "apna-38", title: "Trie Data Structure" },
+                    { id: "apna-39", title: "Graph Data Structure" }
+                ]
+            },
+            {
+                month: "Additional Core Java & DSA Topics (From Roadmap)",
+                topics: [
+                    { id: "extra-exception", title: "Exception Handling (try-catch-finally, custom)" },
+                    { id: "extra-java8", title: "Java 8+ Features (Lambda, Streams, Optional)" },
+                    { id: "extra-concurrency", title: "Multithreading & Concurrency (Threads, Locks, ExecutorService)" },
+                    { id: "extra-generics", title: "Generics (Type Safety, Wildcards)" },
+                    { id: "extra-jvm", title: "JVM Internals (Conceptual)" },
+                    { id: "extra-dp", title: "Dynamic Programming (1D & 2D DP)" },
+                    { id: "extra-heaps", title: "Heaps (Priority Queues)" },
+                    { id: "extra-collections", title: "Advanced Collections (TreeSet, TreeMap, Deque)" },
+                ]
+            },
+            {
+                month: "MONTH 3: Spring Boot Project",
+                topics: [
+                    { id: "spring-core", title: "Spring Core (DI, IoC)" },
+                    { id: "spring-mvc", title: "Spring MVC" },
+                    { id: "spring-boot", title: "Spring Boot Basics" },
+                    { id: "rest-api", title: "REST APIs Principles" },
+                    { id: "spring-data-jpa", title: "Spring Data JPA" },
+                    { id: "sql-fundamentals", title: "SQL Fundamentals" },
+                    { id: "spring-security", title: "Spring Security (JWT)" },
+                    { id: "testing", title: "Testing (JUnit & Mockito)" },
+                    { id: "tools-mastery", title: "Tools: Git, Postman, IDE" },
+                    { id: "project-setup", title: "Project: Setup & Layering" }
+                ]
+            },
+            {
+                month: "MONTH 4: System Design (HLD & LLD)",
+                topics: [
+                    { id: "lld-solid", title: "LLD: SOLID, KISS, DRY Principles" },
+                    { id: "lld-patterns", title: "LLD: Design Patterns (GoF)" },
+                    { id: "lld-cases", title: "LLD: Case Studies (Parking Lot, URL Shortener)" },
+                    { id: "hld-concepts", title: "HLD: Core Concepts (Scalability, Caching, LB)" },
+                    { id: "hld-databases", title: "HLD: Databases (SQL vs NoSQL)" },
+                    { id: "hld-cases", title: "HLD: Case Studies (TinyURL, News Feed)" }
+                ]
+            },
+            {
+                month: "MONTH 5: Advanced Topics & Networking",
+                topics: [
+                    { id: "open-source", title: "Open Source Contribution / Deeper Project Work" },
+                    { id: "networking", title: "Job Referrals & Networking" },
+                    { id: "docker", title: "Advanced: Docker & K8s Basics" },
+                    { id: "cicd", title: "Advanced: CI/CD Basics" },
+                    { id: "cloud", title: "Advanced: Cloud Basics (AWS/GCP)" },
+                    { id: "cp", title: "Competitive Programming (Optional)" }
+                ]
+            },
+            {
+                month: "MONTH 6: Mock Interviews & Job Blitz",
+                topics: [
+                    { id: "mock-dsa", title: "Mock Interviews: DSA" },
+                    { id: "mock-sd", title: "Mock Interviews: System Design" },
+                    { id: "mock-hr", title: "Mock Interviews: HR/Behavioral" },
+                    { id: "behavioral-prep", title: "Behavioral Interview Prep (STAR method)" },
+                    { id: "job-app", title: "Job Application Blitz" },
+                    { id: "final-polish", title: "Final Polish (GitHub, LinkedIn, Resume)" }
+                ]
+            }
+        ];
+
+        let currentUser = 'me';
+        let progressData = {}; 
+
+        const roadmapContainer = document.getElementById('roadmap-container');
+        const userSwitcher = document.getElementById('user-switcher');
+        const modal = document.getElementById('doubt-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const closeModalBtn = document.querySelector('.close-btn');
+        const commentForm = document.getElementById('comment-form');
+        const commentInput = document.getElementById('comment-input');
+        const commentsContainer = document.getElementById('comments-container');
+        const replyContext = document.getElementById('reply-context');
+
+        // *** MODIFIED: Save data to Firebase Realtime Database ***
+        function saveData() {
+            // We create a reference to a specific location in our database.
+            // Let's call it 'progress'. All our data will be stored under this node.
+            const progressRef = ref(database, 'progress');
+            
+            // The set() function overwrites the data at the specified location.
+            set(progressRef, progressData)
+                .catch((error) => {
+                    console.error("Firebase write failed: ", error);
+                    alert("Could not save progress to the cloud. Please check your connection.");
+                });
+        }
+
+        // *** MODIFIED: Load data from Firebase and listen for real-time updates ***
+        function loadData() {
+            const progressRef = ref(database, 'progress');
+            
+            // onValue() sets up a real-time listener.
+            // It fires once with the initial data, and then again every time the data changes in Firebase.
+            onValue(progressRef, (snapshot) => {
+                const data = snapshot.val();
+                
+                // If data exists in Firebase, use it. Otherwise, initialize an empty object.
+                progressData = data ? data : {};
+                
+                // This part is important to ensure all topics from roadmapData exist in our 
+                // local `progressData` object, even if they haven't been saved to Firebase yet.
+                // This prevents errors if you add new topics to the roadmap later.
+                roadmapData.forEach(month => {
+                    month.topics.forEach(topic => {
+                        if (!progressData[topic.id]) {
+                            progressData[topic.id] = {
+                                me: { completed: false },
+                                samiksha: { completed: false },
+                                comments: []
+                            };
+                        } else if (!progressData[topic.id].comments) { 
+                            progressData[topic.id].comments = [];
+                        }
+                    });
+                });
+
+                console.log("Data loaded/updated from Firebase.");
+                // Since data is now loaded (or updated), we need to re-render the entire UI.
+                renderRoadmap(); 
+            });
+        }
+        
+        function renderRoadmap() {
+            // This function is mostly unchanged. It just renders the UI based on the current state of `progressData`.
+            roadmapContainer.innerHTML = '';
+            roadmapData.forEach(month => {
+                const monthDiv = document.createElement('div');
+                monthDiv.className = 'month-container';
+
+                const header = document.createElement('div');
+                header.className = 'month-header';
+                header.innerHTML = `<span>${month.month}</span><span>▼</span>`;
+                
+                const topicList = document.createElement('div');
+                topicList.className = 'topic-list';
+
+                month.topics.forEach(topic => {
+                    const topicData = progressData[topic.id];
+                    const item = document.createElement('div');
+                    item.className = 'topic-item';
+
+                    const isMeChecked = topicData.me?.completed ? 'checked' : '';
+                    const isSamikshaChecked = topicData.samiksha?.completed ? 'checked' : '';
+                    
+                    item.innerHTML = `
+                        <div class="progress-checkboxes">
+                            <label><input type="checkbox" data-user="me" data-topic="${topic.id}" ${isMeChecked} ${currentUser !== 'me' ? 'disabled' : ''}> Kunal S.</label>
+                            <label><input type="checkbox" data-user="samiksha" data-topic="${topic.id}" ${isSamikshaChecked} ${currentUser !== 'samiksha' ? 'disabled' : ''}> Samiksha J.</label>
+                        </div>
+                        <span class="topic-title">${topic.title}</span>
+                        <button class="doubts-btn" data-topic="${topic.id}" data-title="${topic.title}">Doubts (${topicData.comments?.length || 0})</button>
+                    `;
+                    topicList.appendChild(item);
+                });
+                
+                header.addEventListener('click', () => {
+                   topicList.style.display = topicList.style.display === 'block' ? 'none' : 'block';
+                   header.querySelector('span:last-child').textContent = topicList.style.display === 'block' ? '▲' : '▼';
+                });
+
+                monthDiv.appendChild(header);
+                monthDiv.appendChild(topicList);
+                roadmapContainer.appendChild(monthDiv);
+            });
+            updateProgressBars();
+        }
+        
+        // This function is unchanged
+        function updateProgressBars() {
+            const totalTopics = roadmapData.reduce((acc, month) => acc + month.topics.length, 0);
+            let meCompleted = 0;
+            let samikshaCompleted = 0;
+
+            // Use a try-catch block in case progressData is not fully formed yet
+            try {
+                Object.values(progressData).forEach(topic => {
+                    if (topic.me?.completed) meCompleted++;
+                    if (topic.samiksha?.completed) samikshaCompleted++;
+                });
+            } catch (e) {
+                console.warn("Could not calculate progress yet. Data might still be loading.");
+            }
+            
+            const mePercentage = totalTopics > 0 ? Math.round((meCompleted / totalTopics) * 100) : 0;
+            const samikshaPercentage = totalTopics > 0 ? Math.round((samikshaCompleted / totalTopics) * 100) : 0;
+
+            const myProgressBar = document.getElementById('my-progress-bar');
+            myProgressBar.style.width = `${mePercentage}%`;
+            myProgressBar.textContent = `${mePercentage}%`;
+            
+            const samikshaProgressBar = document.getElementById('samiksha-progress-bar');
+            samikshaProgressBar.style.width = `${samikshaPercentage}%`;
+            samikshaProgressBar.textContent = `${samikshaPercentage}%`;
+
+            const leaderStatusEl = document.getElementById('progress-leader-status');
+            let statusText = '';
+            const diff = Math.abs(mePercentage - samikshaPercentage);
+
+            if (meCompleted === 0 && samikshaCompleted === 0 && totalTopics > 0) {
+                statusText = "Let's get started on the journey!";
+            } else if (mePercentage > samikshaPercentage) {
+                statusText = `🚀 Kunal Singh is leading by ${diff}%.`;
+            } else if (samikshaPercentage > mePercentage) {
+                statusText = `🏆 Samiksha Jadhav is leading by ${diff}%.`;
+            } else {
+                statusText = "👏 It's a tie! Both are at the same pace.";
+            }
+            leaderStatusEl.textContent = statusText;
+        }
+
+        // --- ALL EVENT HANDLERS AND OTHER FUNCTIONS BELOW ARE UNCHANGED ---
+
+        function handleProgressChange(e) {
+            const user = e.target.dataset.user;
+            const topicId = e.target.dataset.topic;
+            const isChecked = e.target.checked;
+            
+            if (progressData[topicId] && progressData[topicId][user]) {
+                progressData[topicId][user].completed = isChecked;
+                saveData(); // This now saves to Firebase
+                // No need to call updateProgressBars() here, the onValue listener will handle it
+            }
+        }
+
+        function openDoubtModal(e) {
+            const topicId = e.target.dataset.topic;
+            const topicTitle = e.target.dataset.title;
+            
+            modal.style.display = 'flex';
+            modalTitle.textContent = `Doubts for: ${topicTitle}`;
+            commentForm.dataset.topicId = topicId;
+            
+            renderComments(topicId);
+        }
+
+        function createCommentElement(comment) {
+            const commentDiv = document.createElement('div');
+            commentDiv.className = 'comment';
+            const date = new Date(comment.timestamp).toLocaleString();
+            const authorName = comment.user === 'me' ? 'Kunal Singh' : 'Samiksha Jadhav';
+            
+            commentDiv.innerHTML = `
+                <div>
+                    <strong class="comment-author" data-author="${comment.user}">${authorName}</strong>
+                    <span class="comment-timestamp">${date}</span>
+                </div>
+                <p>${comment.text.replace(/\n/g, '<br>')}</p>
+                <button class="reply-btn" data-comment-id="${comment.id}" data-author-name="${authorName}">Reply</button>
+            `;
+            return commentDiv;
+        }
+
+        function renderComments(topicId) {
+            commentsContainer.innerHTML = '';
+            const comments = progressData[topicId]?.comments || [];
+            if (comments.length === 0) {
+                commentsContainer.innerHTML = '<p>No doubts yet. Ask the first question!</p>';
+                return;
+            }
+            
+            comments.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+            
+            const commentElements = new Map();
+            const rootComments = [];
+
+            comments.forEach(comment => {
+                const commentEl = createCommentElement(comment);
+                commentElements.set(comment.id, commentEl);
+                if (comment.parentId) {
+                    const parentEl = commentElements.get(comment.parentId);
+                    if (parentEl) {
+                        let replyContainer = parentEl.querySelector('.reply-container');
+                        if (!replyContainer) {
+                            replyContainer = document.createElement('div');
+                            replyContainer.className = 'reply-container';
+                            parentEl.appendChild(replyContainer);
+                        }
+                        replyContainer.appendChild(commentEl);
+                    } else {
+                        rootComments.push(commentEl);
+                    }
+                } else {
+                    rootComments.push(commentEl);
+                }
+            });
+
+            rootComments.forEach(el => commentsContainer.appendChild(el));
+            commentsContainer.scrollTop = commentsContainer.scrollHeight;
+        }
+
+        function handleCommentSubmit(e) {
+            e.preventDefault();
+            const topicId = e.target.dataset.topicId;
+            const parentId = e.target.dataset.parentId || null;
+            const text = commentInput.value.trim();
+            
+            if (text && topicId) {
+                const newComment = {
+                    id: Date.now(),
+                    parentId: parentId ? parseInt(parentId) : null,
+                    user: currentUser,
+                    text: text,
+                    timestamp: new Date().toISOString()
+                };
+                
+                progressData[topicId].comments.push(newComment);
+                saveData(); // This saves the new comment to Firebase
+                // The onValue listener will automatically re-render everything
+                
+                commentInput.value = '';
+                commentForm.removeAttribute('data-parent-id');
+                replyContext.style.display = 'none';
+            }
+        }
+        
+        function handleUserSwitch(e) {
+            currentUser = e.target.value;
+            renderRoadmap(); // We just need to re-render locally for this
+        }
+        
+        // *** MODIFIED: Simplified startup logic ***
+        document.addEventListener('DOMContentLoaded', () => {
+            // loadData() now sets up the Firebase listener which will automatically
+            // call renderRoadmap() once the initial data is fetched.
+            loadData(); 
+            
+            // The rest of the event listeners
+            userSwitcher.addEventListener('change', handleUserSwitch);
+            
+            roadmapContainer.addEventListener('change', e => {
+                if (e.target.type === 'checkbox') {
+                    handleProgressChange(e);
+                }
+            });
+
+            roadmapContainer.addEventListener('click', e => {
+                if (e.target.classList.contains('doubts-btn')) {
+                    openDoubtModal(e);
+                }
+            });
+            
+            closeModalBtn.addEventListener('click', () => {
+                modal.style.display = 'none';
+                replyContext.style.display = 'none';
+                commentForm.removeAttribute('data-parent-id');
+            });
+
+            window.addEventListener('click', e => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                    replyContext.style.display = 'none';
+                    commentForm.removeAttribute('data-parent-id');
+                }
+            });
+            
+            commentForm.addEventListener('submit', handleCommentSubmit);
+            
+            commentsContainer.addEventListener('click', e => {
+                if (e.target.classList.contains('reply-btn')) {
+                    const commentId = e.target.dataset.commentId;
+                    const authorName = e.target.dataset.authorName;
+                    commentForm.dataset.parentId = commentId;
+                    replyContext.innerHTML = `Replying to <strong>${authorName}</strong> <button id="cancel-reply">Cancel</button>`;
+                    replyContext.style.display = 'block';
+                    commentInput.focus();
+                }
+            });
+
+            replyContext.addEventListener('click', e => {
+                if (e.target.id === 'cancel-reply') {
+                    commentForm.removeAttribute('data-parent-id');
+                    replyContext.style.display = 'none';
+                }
+            });
+            
+            // Export/Import now acts as a local backup/restore tool. It will overwrite the Firebase data.
+            document.getElementById('export-btn').addEventListener('click', () => {
+                const dataStr = JSON.stringify(progressData, null, 2);
+                const dataBlob = new Blob([dataStr], {type: "application/json"});
+                const url = URL.createObjectURL(dataBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'java-journey-progress.json';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+
+            const importFileInput = document.getElementById('import-file');
+            document.getElementById('import-btn').addEventListener('click', () => importFileInput.click());
+            
+            importFileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const importedData = JSON.parse(event.target.result);
+                        if (typeof importedData === 'object' && importedData['apna-1']) {
+                             if (confirm("This will overwrite your current cloud progress with the file's content. Are you sure?")) {
+                                progressData = importedData;
+                                saveData(); // Overwrite Firebase with the imported data
+                                alert("Progress imported and saved to the cloud successfully!");
+                            }
+                        } else {
+                            alert("Invalid or outdated progress file.");
+                        }
+                    } catch (err) {
+                        alert("Error reading file. Make sure it's a valid progress JSON file.");
+                    }
+                };
+                reader.readAsText(file);
+                e.target.value = '';
+            });
+        });
+    </script>
+</body>
+</html>
